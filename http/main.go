@@ -5,30 +5,19 @@
 package main
 
 import (
-	"fmt"
-	"html"
-	"log"
 	"net/http"
+	"repeat/framework"
 )
 
-type fooHandler struct {
-}
-
-func (f fooHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	_, err := writer.Write([]byte{'h', 'e', 'l', 'l', 'o'})
-	if err != nil {
-		return
-	}
-}
-
 func main() {
+	core := framework.NewCore()
 
-	http.Handle("/foo", fooHandler{})
-	http.HandleFunc("/bar", func(writer http.ResponseWriter, request *http.Request) {
-		_, err := fmt.Fprintf(writer, "Hello,%q", html.EscapeString(request.URL.Path))
-		if err != nil {
-			return
-		}
-	})
-	log.Fatal(http.ListenAndServe(":80", nil))
+	registerRouter(core)
+	server := &http.Server{
+		// 自定义的请求核心处理函数
+		Handler: core,
+		// 请求监听地址
+		Addr: ":80",
+	}
+	server.ListenAndServe()
 }
