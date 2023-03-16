@@ -9,7 +9,6 @@ package demo
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"testing"
 )
 
@@ -57,6 +56,15 @@ type Server struct {
 	hand Filter
 }
 
+func makeBuilder(name string) FilterBuilder {
+	return func(next Filter) Filter {
+		fmt.Println(name)
+		return func(c context.Context) {
+			next(c)
+		}
+	}
+}
+
 func NewServer(name string, builders ...FilterBuilder) Server {
 	// 最开始的一个Filter
 	first := func(ctx context.Context) {
@@ -88,13 +96,8 @@ func threeFilterBuilder(next Filter) Filter {
 }
 
 func TestFilter(t *testing.T) {
-	s := NewServer("abc", twoFilterBuilder, threeFilterBuilder)
+	s := NewServer("abc", twoFilterBuilder, threeFilterBuilder, makeBuilder("oki"))
 	fmt.Println(s.name)
 	ctx := context.WithValue(context.Background(), "name", s.name)
 	s.hand(ctx)
-}
-
-func TestName(t *testing.T) {
-	mux := http.NewServeMux()
-
 }
