@@ -1,0 +1,1 @@
+* 设置私有化模块不走代理    `go env -w GOPRIVATE=*.baidu.com,*.qq.com`    GOPRIVATE域名下的项目将不走代理，而是从私有化部署下载。设置过程中如果报错：`zsh: no matches found: GOPRIVATE`，执行一下命令：  `echo setopt no_nomatch >> ~/.zshrc && source ~/.zshrc`,根据不同shell替换.zshrc即可。    
